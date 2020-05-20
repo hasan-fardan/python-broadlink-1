@@ -667,7 +667,7 @@ class rm4(rm):
         device.__init__(self, *args, **kwargs)
         self.type = "RM4"
         self._request_header = b'\x04\x00'
-        self._code_sending_header = b'\xd0\x00'
+        self._code_sending_header = b'\xda\x00'
 
     def check_temperature(self):
         return self._read_sensor( 0x24, 4, 100.0 )
