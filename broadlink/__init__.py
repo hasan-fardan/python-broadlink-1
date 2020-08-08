@@ -197,6 +197,10 @@ def discover(timeout=None, local_ip_address=None, discover_ip_address='255.255.2
 
 
 class device:
+    """Controls a Broadlink device."""
+
+    type = "Unknown"
+
     def __init__(
         self,
         host,
@@ -220,7 +224,6 @@ class device:
         self.iv = bytearray(
             [0x56, 0x2e, 0x17, 0x99, 0x6d, 0x09, 0x3d, 0x28, 0xdd, 0xb3, 0xba, 0x69, 0x5a, 0x2e, 0x6f, 0x58])
         self.id = bytearray([0, 0, 0, 0])
-        self.type = "Unknown"
         self.lock = threading.Lock()
 
         self.aes = None
@@ -377,9 +380,12 @@ class device:
 
 
 class mp1(device):
+    """Controls a Broadlink MP1."""
+
+    type = "MP1"
+
     def __init__(self, *args, **kwargs):
         device.__init__(self, *args, **kwargs)
-        self.type = "MP1"
 
     def set_power_mask(self, sid_mask, state):
         """Sets the power state of the smart power strip."""
@@ -440,9 +446,12 @@ class mp1(device):
 
 
 class bg1(device):
+    """Controls a Broadlink BG1."""
+
+    type = "BG1"
+
     def __init__(self, *args, **kwargs):
         device.__init__(self, *args, **kwargs)
-        self.type = "BG1"
 
     def get_state(self):
         """Get state of device.
@@ -508,9 +517,12 @@ class bg1(device):
         return state
 
 class sp1(device):
+    """Controls a Broadlink SP1."""
+
+    type = "SP1"
+
     def __init__(self, *args, **kwargs):
         device.__init__(self, *args, **kwargs)
-        self.type = "SP1"
 
     def set_power(self, state):
         packet = bytearray(4)
@@ -520,9 +532,12 @@ class sp1(device):
 
 
 class sp2(device):
+    """Controls a Broadlink SP2."""
+
+    type = "SP2"
+
     def __init__(self, *args, **kwargs):
         device.__init__(self, *args, **kwargs)
-        self.type = "SP2"
 
     def set_power(self, state):
         """Sets the power state of the smart plug."""
@@ -582,6 +597,9 @@ class sp2(device):
 
 
 class a1(device):
+    """Controls a Broadlink A1."""
+
+    type = "A1"
 
     _SENSORS_AND_LEVELS = (
         ('light', ('dark', 'dim', 'normal', 'bright')),
@@ -591,7 +609,6 @@ class a1(device):
 
     def __init__(self, *args, **kwargs):
         device.__init__(self, *args, **kwargs)
-        self.type = "A1"
 
     def check_sensors(self):
         data = self.check_sensors_raw()
@@ -618,9 +635,12 @@ class a1(device):
 
 
 class rm(device):
+    """Controls a Broadlink RM2."""
+
+    type = "RM2"
+
     def __init__(self, *args, **kwargs):
         device.__init__(self, *args, **kwargs)
-        self.type = "RM2"
         self._request_header = bytes()
         self._code_sending_header = bytes()
 
@@ -695,9 +715,12 @@ class rm(device):
 
 
 class rm4(rm):
+    """Controls a Broadlink RM4."""
+
+    type = "RM4"
+
     def __init__(self, *args, **kwargs):
         device.__init__(self, *args, **kwargs)
-        self.type = "RM4"
         self._request_header = b'\x04\x00'
         self._code_sending_header = b'\xd0\x00'
 
@@ -729,9 +752,12 @@ class rm2(rm):
 
 
 class hysen(device):
+    """Controls a Hysen HY02B05H."""
+
+    type = "HYSEN"
+
     def __init__(self, *args, **kwargs):
         device.__init__(self, *args, **kwargs)
-        self.type = "Hysen heating controller"
 
     # Send a request
     # input_payload should be a bytearray, usually 6 bytes, e.g. bytearray([0x01,0x06,0x00,0x02,0x10,0x00])
@@ -943,13 +969,12 @@ S1C_SENSORS_TYPES = {
 
 
 class S1C(device):
-    """
-    Its VERY VERY VERY DIRTY IMPLEMENTATION of S1C
-    """
+    """Controls a Broadlink S1C."""
+
+    type = "S1C"
 
     def __init__(self, *args, **kwargs):
         device.__init__(self, *args, **kwargs)
-        self.type = 'S1C'
 
     def get_sensors_status(self):
         packet = bytearray(16)
@@ -990,9 +1015,12 @@ class S1C(device):
 
 
 class dooya(device):
+    """Controls a Dooya DT360."""
+
+    type = "DOOYA"
+
     def __init__(self, *args, **kwargs):
         device.__init__(self, *args, **kwargs)
-        self.type = "Dooya DT360E"
 
     def _send(self, magic1, magic2):
         packet = bytearray(16)
@@ -1035,6 +1063,10 @@ class dooya(device):
         self.stop()
 
 class lb1(device):
+    """Controls a Broadlink LB1."""
+
+    type = "LB1"
+
     state_dict = []
     effect_map_dict = { 'lovely color' : 0,
                         'flashlight' : 1,
@@ -1047,7 +1079,6 @@ class lb1(device):
 
     def __init__(self, *args, **kwargs):
         device.__init__(self, *args, **kwargs)
-        self.type = "SmartBulb"
 
     def send_command(self,command, type = 'set'):
         packet = bytearray(16+(int(len(command)/16) + 1)*16)
