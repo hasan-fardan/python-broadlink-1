@@ -76,7 +76,7 @@ def scan(
     try:
         while (time.time() - starttime) < timeout:
             conn.sendto(packet, (discover_ip_address, discover_ip_port))
-            conn.settimeout(1)
+            conn.settimeout(3.33)
 
             while True:
                 try:
