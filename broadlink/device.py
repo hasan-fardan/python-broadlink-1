@@ -202,7 +202,7 @@ class device:
         if len(key) % 16 != 0:
             return False
 
-        self.count = int.from_bytes(response[0x28:0x30], "little")
+        self.count = int.from_bytes(response[0x28:0x2a], "little")
         self.id = payload[0x03::-1]
         self.update_aes(key)
         return True
