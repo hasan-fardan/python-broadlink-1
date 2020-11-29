@@ -76,7 +76,7 @@ def scan(
     try:
         while (time.time() - start_time) < timeout:
             time_left = timeout - (time.time() - start_time)
-            conn.settimeout(min((1, time_left)))
+            conn.settimeout(min(1, time_left))
             conn.sendto(packet, (discover_ip_address, discover_ip_port))
 
             while True:
@@ -337,10 +337,10 @@ class device:
             with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as conn:
                 while True:
                     time_left = timeout - (time.time() - start_time)
-                    conn.settimeout(min((3, time_left)))
+                    conn.settimeout(min(3, time_left))
+                    conn.sendto(packet, self.host)
 
                     try:
-                        conn.sendto(packet, self.host)
                         resp, _ = conn.recvfrom(2048)
                         break
                     except socket.timeout:
