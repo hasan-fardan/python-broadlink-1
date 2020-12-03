@@ -336,7 +336,7 @@ class device:
             with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as conn:
                 while True:
                     time_left = timeout - (time.time() - start_time)
-                    conn.settimeout(min(3, time_left))
+                    conn.settimeout(min(5, time_left))
                     conn.sendto(packet, self.host)
 
                     try:
