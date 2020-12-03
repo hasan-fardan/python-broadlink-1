@@ -1,4 +1,5 @@
 """Support for Broadlink devices."""
+import logging
 import socket
 import threading
 import random
@@ -10,6 +11,8 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
 from .exceptions import check_error, exception
+
+_LOGGER = logging.getLogger(__name__)
 
 HelloResponse = Tuple[int, Tuple[str, int], str, str, bool]
 
@@ -218,6 +221,7 @@ class device:
 
         self.id = payload[0x03::-1]
         self.update_aes(key)
+        _LOGGER.error(f"Authenticated. Count: {self.count}")
         return True
 
     def hello(self, local_ip_address=None) -> bool:
