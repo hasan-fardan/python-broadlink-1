@@ -303,13 +303,13 @@ class sp4(device):
         return state
 
 
-class sp4b(sp4):
-    """Controls a Broadlink SP4 (type B)."""
+class sp4s(sp4):
+    """Controls a Broadlink SP4S."""
 
     def __init__(self, *args, **kwargs) -> None:
         """Initialize the controller."""
         device.__init__(self, *args, **kwargs)
-        self.type = "SP4B"
+        self.type = "SP4S"
 
     def _encode(self, flag: int, state: dict) -> bytes:
         """Encode a message."""
