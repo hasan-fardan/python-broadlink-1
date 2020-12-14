@@ -311,6 +311,11 @@ class sp4s(sp4):
         device.__init__(self, *args, **kwargs)
         self.type = "SP4S"
 
+    def get_state(self) -> dict:
+        """Get full state of device."""
+        # Filter unsupported features.
+        return {k: v for (k, v) in super().get_state().items() if v != -1}
+
     def _encode(self, flag: int, state: dict) -> bytes:
         """Encode a message."""
         payload = json.dumps(state, separators=(",", ":")).encode()
