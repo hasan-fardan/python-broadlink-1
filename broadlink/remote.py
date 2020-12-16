@@ -1,6 +1,6 @@
 """Support for universal remotes."""
 from .device import device
-from .exceptions import check_error
+from .exceptions import check_error, exception
 
 
 class rm(device):
@@ -80,7 +80,10 @@ class rm(device):
         response = self.send_packet(0x6A, packet)
         check_error(response[0x22:0x24])
         payload = self.decrypt(response[0x38:])
-        return bytearray(payload[len(self._request_header) + 4 :])
+        data = payload[len(self._request_header) + 4 :]
+        if data[0] >= 0xC0:  # Firmware issue.
+            raise exception(-4026, "The device returned malformed data", data)
+        return data
 
     def check_temperature(self) -> int:
         """Return the temperature."""

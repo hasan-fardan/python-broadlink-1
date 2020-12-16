@@ -88,6 +88,10 @@ class ChecksumError(SDKException):
     """Received data packet check error."""
 
 
+class DataError(SDKException):
+    """Data sent or received error."""
+
+
 class LengthError(SDKException):
     """Received data packet length error."""
 
@@ -118,16 +122,20 @@ BROADLINK_EXCEPTIONS = {
     -4000: (NetworkTimeoutError, "Network timeout"),
     -4007: (LengthError, "Received data packet length error"),
     -4008: (ChecksumError, "Received data packet check error"),
+    -4026: (DataError, "Data sent or received error"),
 }
 
 
-def exception(error_code):
+def exception(error_code, *error_msg):
     """Return exception corresponding to an error code."""
     try:
         exc, msg = BROADLINK_EXCEPTIONS[error_code]
-        return exc(error_code, msg)
     except KeyError:
-        return UnknownError(error_code, "Unknown error")
+        exc, msg = UnknownError, "Unknown error"
+
+    if error_msg:
+        return exc(error_code, *error_msg)
+    return exc(error_code, msg)
 
 
 def check_error(error):
