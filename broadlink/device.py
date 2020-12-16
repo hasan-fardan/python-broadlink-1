@@ -97,6 +97,19 @@ def scan(
         conn.close()
 
 
+def keep_alive(host: str, port: int = 80) -> None:
+    """Send a heartbeat message to a host or broadcast address.
+
+    This message feeds the watchdog timer. It must be sent every 2
+    minutes to prevent reboots when the cloud cannot be reached.
+    """
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as conn:
+        conn.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        packet = bytearray(0x30)
+        packet[0x26] = 1
+        conn.sendto(packet, (host, port))
+
+
 class device:
     """Controls a Broadlink device."""
 
@@ -229,6 +242,14 @@ class device:
         self.name = name
         self.is_locked = is_locked
         return True
+
+    def keep_alive(self) -> None:
+        """Send a heartbeat message to the device.
+
+        This message feeds the watchdog timer. It must be sent every 2
+        minutes to prevent reboots when the cloud cannot be reached.
+        """
+        keep_alive(self.host[0], port=self.host[1])
 
     def get_fwversion(self) -> int:
         """Get firmware version."""
