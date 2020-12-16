@@ -2,7 +2,7 @@
 import struct
 
 from .device import device
-from .exceptions import check_error
+from .exceptions import check_error, exception
 
 
 class rm(device):
@@ -58,6 +58,10 @@ class rm(device):
     def check_sensors(self) -> dict:
         """Return the state of the sensors."""
         data = self._send_command(0x1)
+
+        if data[0] >= 0xC0:  # Firmware issue.
+            raise exception(-4026, "The device returned malformed data", data)
+
         return {"temperature": data[0x0] + data[0x1] / 10.0}
 
 

@@ -1,6 +1,6 @@
 """Support for sensors."""
 from .device import device
-from .exceptions import check_error
+from .exceptions import check_error, exception
 
 
 class a1(device):
@@ -33,7 +33,11 @@ class a1(device):
         response = self.send_packet(0x6A, packet)
         check_error(response[0x22:0x24])
         payload = self.decrypt(response[0x38:])
-        data = bytearray(payload[0x4:])
+        data = payload[0x4:]
+
+        if data[0] >= 0xC0:  # Firmware issue.
+            raise exception(-4026, "The device returned malformed data", data)
+
         return {
             "temperature": data[0x0] + data[0x1] / 10.0,
             "humidity": data[0x2] + data[0x3] / 10.0,
