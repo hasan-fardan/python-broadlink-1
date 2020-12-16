@@ -313,8 +313,15 @@ class sp4s(sp4):
 
     def get_state(self) -> dict:
         """Get full state of device."""
-        # Filter unsupported features.
-        return {k: v for (k, v) in super().get_state().items() if v != -1}
+        state = super().get_state()
+
+        # Convert sensor data to float. Remove keys if sensors are not supported.
+        sensor_attrs = ["current", "volt", "power", "totalconsum", "overload"]
+        for attr in sensor_attrs:
+            value = state.pop(attr, -1)
+            if value != -1:
+                state[attr] = value / 1000
+        return state
 
     def _encode(self, flag: int, state: dict) -> bytes:
         """Encode a message."""
