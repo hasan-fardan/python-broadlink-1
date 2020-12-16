@@ -11,7 +11,7 @@ from .exceptions import exception
 from .light import lb1
 from .remote import rm, rm4
 from .sensor import a1
-from .switch import bg1, mp1, sp1, sp2, sp3s, sp4, sp4b
+from .switch import bg1, mp1, sp1, sp2, sp3s, sp4, sp4s
 
 
 SUPPORTED_TYPES = {
@@ -48,9 +48,9 @@ SUPPORTED_TYPES = {
     0x7D11: (sp4, "SP mini 3", "Broadlink"),
     0xA56A: (sp4, "MCB1", "Broadlink"),
     0xA589: (sp4, "SP4L-UK", "Broadlink"),
-    0x6113: (sp4b, "SCB1E", "Broadlink"),
-    0x618B: (sp4b, "SP4L-EU", "Broadlink"),
-    0x648B: (sp4b, "SP4M-US", "Broadlink"),
+    0x6113: (sp4s, "SCB1E", "Broadlink"),
+    0x618B: (sp4s, "SP4L-EU", "Broadlink"),
+    0x648B: (sp4s, "SP4M-US", "Broadlink"),
     0x2712: (rm, "RM pro/pro+", "Broadlink"),
     0x272A: (rm, "RM pro", "Broadlink"),
     0x2737: (rm, "RM mini 3", "Broadlink"),
