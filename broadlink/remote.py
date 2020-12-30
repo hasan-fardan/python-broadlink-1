@@ -1,6 +1,8 @@
 """Support for universal remotes."""
+import ctypes as ct
+
 from .device import device
-from .exceptions import check_error
+from .exceptions import check_error, exception
 
 
 class rm(device):
@@ -80,17 +82,24 @@ class rm(device):
         response = self.send_packet(0x6A, packet)
         check_error(response[0x22:0x24])
         payload = self.decrypt(response[0x38:])
-        return bytearray(payload[len(self._request_header) + 4 :])
+        return payload[len(self._request_header) + 4 :]
 
-    def check_temperature(self) -> int:
+    def check_temperature(self) -> float:
         """Return the temperature."""
-        data = self._check_sensors(0x1)
-        return data[0x0] + data[0x1] / 10.0
+        return self.check_sensors()["temperature"]
 
     def check_sensors(self) -> dict:
         """Return the state of the sensors."""
         data = self._check_sensors(0x1)
-        return {"temperature": data[0x0] + data[0x1] / 10.0}
+
+        try:
+            temperature = ct.c_byte(data[0x0]).value + ct.c_byte(data[0x1]).value / 10.0
+            if temperature < -50:
+                raise ValueError("Temperature out of range")
+            return {"temperature": temperature}
+
+        except ValueError as err:
+            raise exception(-4026, "The device returned malformed data", data) from err
 
 
 class rm4(rm):
@@ -103,20 +112,24 @@ class rm4(rm):
         self._request_header = b"\x04\x00"
         self._code_sending_header = b"\xda\x00"
 
-    def check_temperature(self) -> int:
-        """Return the temperature."""
-        data = self._check_sensors(0x24)
-        return data[0x0] + data[0x1] / 100.0
-
-    def check_humidity(self) -> int:
+    def check_humidity(self) -> float:
         """Return the humidity."""
-        data = self._check_sensors(0x24)
-        return data[0x2] + data[0x3] / 100.0
+        return self.check_sensors()["humidity"]
 
     def check_sensors(self) -> dict:
         """Return the state of the sensors."""
         data = self._check_sensors(0x24)
-        return {
-            "temperature": data[0x0] + data[0x1] / 100.0,
-            "humidity": data[0x2] + data[0x3] / 100.0,
-        }
+
+        try:
+            temperature = ct.c_byte(data[0x0]).value + ct.c_byte(data[0x1]).value / 100.0
+            if temperature < -50:
+                raise ValueError("Temperature out of range")
+
+            humidity = data[0x2] + data[0x3] / 100.0
+            if humidity > 100:
+                raise ValueError("Humidity out of range")
+
+            return {"temperature": temperature, "humidity": humidity}
+
+        except ValueError as err:
+            raise exception(-4026, "The device returned malformed data", data) from err
